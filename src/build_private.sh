@@ -14,7 +14,7 @@ helm package ups-broker
 helm package catalog
 
 #CREATE INDEX.YAML
-helm repo index --url https://raw.githubusercontent.com/niklaushirt/servicecatalog/master/stable/repo/stable/ ./
+helm repo index --url https://raw.githubusercontent.com/niklaushirt/servicecatalog/master/repo/stable/ ./
 
 #-----------------------------------------------------------------------------------------------------------------
 #REMOVE PACKAGES in charts
