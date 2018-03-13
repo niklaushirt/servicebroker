@@ -14,8 +14,6 @@ spec:
       app: {{ template "fullname" . }}-controller-manager
   template:
     metadata:
-      annotations:
-        prometheus.io/scrape: "{{ .Values.controllerManager.enablePrometheusScrape }}"
       labels:
         app: {{ template "fullname" . }}-controller-manager
         chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
@@ -25,8 +23,8 @@ spec:
       serviceAccountName: "{{ .Values.controllerManager.serviceAccount }}"
       containers:
       - name: controller-manager
-        image: {{ .Values.image }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        image: {{ .Values.controllerManager.image }}
+        imagePullPolicy: {{ .Values.controllerManager.imagePullPolicy }}
         resources:
           requests:
             cpu: 100m
@@ -40,12 +38,10 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         args:
-        - controller-manager
         - --port
         - "8080"
         {{ if .Values.controllerManager.leaderElection.activated -}}
-        - "--leader-election-namespace={{ .Release.Namespace }}"
-        - "--leader-elect-resource-lock=configmaps"
+        - "--leader-election-namespace=$(K8S_NAMESPACE)"
         {{- else }}
         - "--leader-elect=false"
         {{- end }}
@@ -57,10 +53,11 @@ spec:
         {{- end}}
         {{- if not .Values.useAggregator }}
         - --service-catalog-api-server-url
+        {{- if .Values.apiserver.insecure }}
+        - http://{{ template "fullname" . }}-apiserver
+        {{- else }}
         - https://{{ template "fullname" . }}-apiserver
         {{- end }}
-        {{ if and (.Values.controllerManager.apiserverSkipVerify) (not .Values.useAggregator) -}}
-        - "--service-catalog-insecure-skip-verify=true"
         {{- end }}
         - -v
         - "{{ .Values.controllerManager.verbosity }}"
@@ -69,14 +66,6 @@ spec:
         {{ if .Values.controllerManager.brokerRelistIntervalActivated -}}
         - --broker-relist-interval
         - {{ .Values.controllerManager.brokerRelistInterval }}
-        {{- end }}
-        {{- if .Values.originatingIdentityEnabled }}
-        - --feature-gates
-        - OriginatingIdentity=true
-        {{- end }}
-        {{- if .Values.asyncBindingOperationsEnabled }}
-        - --feature-gates
-        - AsyncBindingOperations=true
         {{- end }}
         ports:
         - containerPort: 8080
@@ -89,7 +78,7 @@ spec:
             port: 8080
             path: /healthz
           failureThreshold: 1
-          initialDelaySeconds: 20
+          initialDelaySeconds: 10
           periodSeconds: 10
           successThreshold: 1
           timeoutSeconds: 2
@@ -98,7 +87,7 @@ spec:
             port: 8080
             path: /healthz
           failureThreshold: 3
-          initialDelaySeconds: 20
+          initialDelaySeconds: 10
           periodSeconds: 10
           successThreshold: 1
           timeoutSeconds: 2

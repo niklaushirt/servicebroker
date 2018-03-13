@@ -30,7 +30,7 @@ rm ../charts/repo/stable/index.yaml
 #-----------------------------------------------------------------------------------------------------------------
 
 cp ups-broker-0.0.1.tgz ../charts/repo/stable/
-cp catalog-0.1.9.tgz ../charts/repo/stable/
+cp catalog-0.0.1.tgz ../charts/repo/stable/
 
 #COPY INDEX.YAML
 cp index.yaml ../charts/repo/stable/index.yaml
