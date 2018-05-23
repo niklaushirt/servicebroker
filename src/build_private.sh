@@ -2,7 +2,7 @@
 #-----------------------------------------------------------------------------------------------------------------
 #REMOVE PACKAGES
 #-----------------------------------------------------------------------------------------------------------------
-#rm ./libertysimple-1.0.0.tgz
+rm ./*.tgz
 
 #REMOVE INDEX.YAML
 rm ./index.yaml
@@ -29,8 +29,8 @@ rm ../charts/repo/stable/index.yaml
 #COPY PACKAGES
 #-----------------------------------------------------------------------------------------------------------------
 
-cp ups-broker-0.0.1.tgz ../charts/repo/stable/
-cp catalog-0.0.1.tgz ../charts/repo/stable/
+mv *.tgz ../charts/repo/stable/
+
 
 #COPY INDEX.YAML
-cp index.yaml ../charts/repo/stable/index.yaml
+mv index.yaml ../charts/repo/stable/index.yaml
